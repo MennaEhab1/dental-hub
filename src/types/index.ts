@@ -17,6 +17,9 @@ export interface Patient extends User {
   dateOfBirth: string;
   gender: 'male' | 'female' | 'other';
   address: string;
+  bloodType?: string;
+  allergies?: string[];
+  isActive?: boolean;
   emergencyContact?: {
     name: string;
     phone: string;
@@ -41,6 +44,7 @@ export interface Doctor extends User {
   reviewCount: number;
   availableSlots: TimeSlot[];
   workingDays: string[];
+  schedule?: WeeklySchedule;
 }
 
 export interface Admin extends User {
@@ -103,17 +107,33 @@ export interface TimeSlot {
   isAvailable: boolean;
 }
 
+export interface WeeklySchedule {
+  [day: string]: { start: string; end: string; isOff: boolean };
+}
+
 export interface MedicalRecord {
   id: string;
   patientId: string;
   doctorId: string;
   doctor?: Doctor;
+  patient?: Patient;
   date: string;
+  type: 'diagnosis' | 'treatment' | 'prescription' | 'note';
   diagnosis: string;
   treatment: string;
   notes: string;
-  attachments?: string[];
+  toothNumber?: string;
+  attachments?: Attachment[];
   prescription?: Prescription;
+}
+
+export interface Attachment {
+  id: string;
+  name: string;
+  type: string;
+  url: string;
+  size: string;
+  uploadedAt: string;
 }
 
 export interface Prescription {
@@ -160,9 +180,21 @@ export interface Message {
 export interface Conversation {
   id: string;
   participants: string[];
+  participantDetails?: { id: string; name: string; avatar?: string; role: string }[];
   lastMessage?: Message;
   unreadCount: number;
   updatedAt: string;
+}
+
+export interface Notification {
+  id: string;
+  userId: string;
+  title: string;
+  message: string;
+  type: 'appointment' | 'message' | 'system' | 'reminder';
+  isRead: boolean;
+  link?: string;
+  createdAt: string;
 }
 
 export interface DashboardStats {

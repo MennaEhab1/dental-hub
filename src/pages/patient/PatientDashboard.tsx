@@ -4,26 +4,23 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { AppointmentCard } from '@/components/appointments/AppointmentCard';
 import { LoadingCard } from '@/components/common/LoadingSpinner';
 import { NoAppointments } from '@/components/common/EmptyState';
+import { StatCard } from '@/components/dashboard/StatCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Calendar, 
   Clock, 
   CheckCircle,
   MessageSquare,
-  ArrowRight
+  ArrowRight,
+  FileText,
+  Stethoscope
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { appointmentService } from '@/services/api';
 import type { Appointment } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
-
-const stats = [
-  { label: 'Upcoming', value: 2, icon: Calendar, color: 'text-primary' },
-  { label: 'Completed', value: 8, icon: CheckCircle, color: 'text-success' },
-  { label: 'Pending', value: 1, icon: Clock, color: 'text-warning' },
-  { label: 'Messages', value: 3, icon: MessageSquare, color: 'text-accent' },
-];
 
 export default function PatientDashboard() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -44,6 +41,21 @@ export default function PatientDashboard() {
     fetchData();
   }, [user]);
 
+  const upcomingCount = appointments.filter(a => a.status === 'confirmed' || a.status === 'pending').length;
+  const completedCount = appointments.filter(a => a.status === 'completed').length;
+  const pendingCount = appointments.filter(a => a.status === 'pending').length;
+
+  const lastVisit = appointments
+    .filter(a => a.status === 'completed')
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+  const stats = [
+    { label: 'Upcoming', value: upcomingCount, icon: Calendar, color: 'text-primary', bg: 'bg-primary/10' },
+    { label: 'Completed', value: completedCount, icon: CheckCircle, color: 'text-success', bg: 'bg-success/10' },
+    { label: 'Pending', value: pendingCount, icon: Clock, color: 'text-warning', bg: 'bg-warning/10' },
+    { label: 'Messages', value: 3, icon: MessageSquare, color: 'text-accent', bg: 'bg-accent/10' },
+  ];
+
   return (
     <DashboardLayout role="patient">
       <div className="space-y-6">
@@ -59,108 +71,152 @@ export default function PatientDashboard() {
           <p className="text-muted-foreground mb-6">
             Here's an overview of your dental health journey.
           </p>
-          <Link to="/booking">
-            <Button className="gradient-bg border-0">
-              <Calendar className="w-4 h-4 mr-2" />
-              Book New Appointment
-            </Button>
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link to="/booking">
+              <Button className="gradient-bg border-0">
+                <Calendar className="w-4 h-4 mr-2" />
+                Book Appointment
+              </Button>
+            </Link>
+            <Link to="/patient/records">
+              <Button variant="outline">
+                <FileText className="w-4 h-4 mr-2" />
+                View Records
+              </Button>
+            </Link>
+          </div>
         </motion.div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <Card>
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg bg-muted ${stat.color}`}>
-                      <stat.icon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                      <p className="text-xs text-muted-foreground">{stat.label}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+            <StatCard key={stat.label} {...stat} delay={index * 0.1} />
           ))}
         </div>
 
-        {/* Upcoming Appointments */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg font-display">Upcoming Appointments</CardTitle>
-            <Link to="/patient/appointments">
-              <Button variant="ghost" size="sm">
-                View All
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </Link>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <LoadingCard />
-            ) : appointments.length > 0 ? (
-              <div className="space-y-4">
-                {appointments.slice(0, 3).map((appointment) => (
-                  <AppointmentCard
-                    key={appointment.id}
-                    appointment={appointment}
-                    variant="compact"
-                  />
-                ))}
-              </div>
-            ) : (
-              <NoAppointments onBook={() => window.location.href = '/booking'} />
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Quick Actions */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <Card className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-xl gradient-bg">
-                <MessageSquare className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground mb-1">Message Your Doctor</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Have questions? Send a direct message to your dentist.
-                </p>
-                <Link to="/patient/messages">
-                  <Button variant="outline" size="sm">
-                    Open Messages
-                  </Button>
-                </Link>
-              </div>
-            </div>
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Upcoming Appointments */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-lg font-display">Upcoming Appointments</CardTitle>
+              <Link to="/patient/appointments">
+                <Button variant="ghost" size="sm">
+                  View All
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <LoadingCard />
+              ) : appointments.filter(a => a.status === 'confirmed' || a.status === 'pending').length > 0 ? (
+                <div className="space-y-3">
+                  {appointments
+                    .filter(a => a.status === 'confirmed' || a.status === 'pending')
+                    .slice(0, 3)
+                    .map((appointment) => (
+                      <AppointmentCard
+                        key={appointment.id}
+                        appointment={appointment}
+                        variant="compact"
+                      />
+                    ))}
+                </div>
+              ) : (
+                <NoAppointments onBook={() => window.location.href = '/booking'} />
+              )}
+            </CardContent>
           </Card>
 
-          <Card className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-xl bg-success/10">
-                <CheckCircle className="w-6 h-6 text-success" />
+          {/* Last Visit Summary */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-display">Last Visit</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {lastVisit ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={lastVisit.doctor?.avatar} />
+                      <AvatarFallback>
+                        {lastVisit.doctor?.firstName[0]}{lastVisit.doctor?.lastName[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium text-foreground text-sm">
+                        Dr. {lastVisit.doctor?.firstName} {lastVisit.doctor?.lastName}
+                      </p>
+                      <p className="text-xs text-muted-foreground capitalize">
+                        {lastVisit.doctor?.specialty.replace('-', ' ')}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Calendar className="w-3.5 h-3.5 text-primary" />
+                      <span className="text-muted-foreground">
+                        {new Date(lastVisit.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Stethoscope className="w-3.5 h-3.5 text-primary" />
+                      <span className="text-muted-foreground">{lastVisit.service?.name}</span>
+                    </div>
+                  </div>
+                  {lastVisit.notes && (
+                    <p className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg">
+                      {lastVisit.notes}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-8">No previous visits</p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid md:grid-cols-3 gap-4">
+          <Card className="p-5 hover:shadow-card transition-shadow cursor-pointer">
+            <Link to="/patient/messages" className="flex items-start gap-4">
+              <div className="p-3 rounded-xl gradient-bg shrink-0">
+                <MessageSquare className="w-5 h-5 text-primary-foreground" />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-foreground mb-1">Medical Records</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  View your treatment history and dental records.
+              <div>
+                <h3 className="font-semibold text-foreground mb-1 text-sm">Message Doctor</h3>
+                <p className="text-xs text-muted-foreground">
+                  Send a direct message to your dentist.
                 </p>
-                <Link to="/patient/profile">
-                  <Button variant="outline" size="sm">
-                    View Records
-                  </Button>
-                </Link>
               </div>
-            </div>
+            </Link>
+          </Card>
+          <Card className="p-5 hover:shadow-card transition-shadow cursor-pointer">
+            <Link to="/patient/records" className="flex items-start gap-4">
+              <div className="p-3 rounded-xl bg-success/10 shrink-0">
+                <FileText className="w-5 h-5 text-success" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground mb-1 text-sm">Medical Records</h3>
+                <p className="text-xs text-muted-foreground">
+                  View treatment history and records.
+                </p>
+              </div>
+            </Link>
+          </Card>
+          <Card className="p-5 hover:shadow-card transition-shadow cursor-pointer">
+            <Link to="/patient/profile" className="flex items-start gap-4">
+              <div className="p-3 rounded-xl bg-accent/10 shrink-0">
+                <Stethoscope className="w-5 h-5 text-accent" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground mb-1 text-sm">My Profile</h3>
+                <p className="text-xs text-muted-foreground">
+                  Update personal and insurance info.
+                </p>
+              </div>
+            </Link>
           </Card>
         </div>
       </div>

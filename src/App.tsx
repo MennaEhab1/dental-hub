@@ -14,10 +14,28 @@ import LoginPage from "./pages/auth/LoginPage";
 import RegisterPage from "./pages/auth/RegisterPage";
 import BookingPage from "./pages/booking/BookingPage";
 import BookingConfirmation from "./pages/booking/BookingConfirmation";
-import PatientDashboard from "./pages/patient/PatientDashboard";
-import DoctorDashboard from "./pages/doctor/DoctorDashboard";
-import AdminDashboard from "./pages/admin/AdminDashboard";
 import NotFound from "./pages/NotFound";
+
+// Patient Pages
+import PatientDashboard from "./pages/patient/PatientDashboard";
+import PatientAppointments from "./pages/patient/PatientAppointments";
+import PatientMedicalRecords from "./pages/patient/PatientMedicalRecords";
+import PatientMessages from "./pages/patient/PatientMessages";
+import PatientProfile from "./pages/patient/PatientProfile";
+
+// Doctor Pages
+import DoctorDashboard from "./pages/doctor/DoctorDashboard";
+import DoctorAppointments from "./pages/doctor/DoctorAppointments";
+import DoctorPatients from "./pages/doctor/DoctorPatients";
+import DoctorMedicalRecords from "./pages/doctor/DoctorMedicalRecords";
+import DoctorMessages from "./pages/doctor/DoctorMessages";
+
+// Admin Pages
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminDoctors from "./pages/admin/AdminDoctors";
+import AdminPatients from "./pages/admin/AdminPatients";
+import AdminAppointments from "./pages/admin/AdminAppointments";
+import AdminPharmacy from "./pages/admin/AdminPharmacy";
 
 const queryClient = new QueryClient();
 
@@ -41,23 +59,26 @@ const App = () => (
               
               {/* Patient Routes */}
               <Route path="/patient/dashboard" element={<PatientDashboard />} />
-              <Route path="/patient/appointments" element={<PatientDashboard />} />
-              <Route path="/patient/profile" element={<PatientDashboard />} />
-              <Route path="/patient/messages" element={<PatientDashboard />} />
-              <Route path="/patient/settings" element={<PatientDashboard />} />
+              <Route path="/patient/appointments" element={<PatientAppointments />} />
+              <Route path="/patient/records" element={<PatientMedicalRecords />} />
+              <Route path="/patient/messages" element={<PatientMessages />} />
+              <Route path="/patient/profile" element={<PatientProfile />} />
+              <Route path="/patient/settings" element={<PatientProfile />} />
               
               {/* Doctor Routes */}
               <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
-              <Route path="/doctor/appointments" element={<DoctorDashboard />} />
-              <Route path="/doctor/patients" element={<DoctorDashboard />} />
-              <Route path="/doctor/messages" element={<DoctorDashboard />} />
+              <Route path="/doctor/appointments" element={<DoctorAppointments />} />
+              <Route path="/doctor/patients" element={<DoctorPatients />} />
+              <Route path="/doctor/records" element={<DoctorMedicalRecords />} />
+              <Route path="/doctor/messages" element={<DoctorMessages />} />
               <Route path="/doctor/settings" element={<DoctorDashboard />} />
               
               {/* Admin Routes */}
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/patients" element={<AdminDashboard />} />
-              <Route path="/admin/doctors" element={<AdminDashboard />} />
-              <Route path="/admin/appointments" element={<AdminDashboard />} />
+              <Route path="/admin/doctors" element={<AdminDoctors />} />
+              <Route path="/admin/patients" element={<AdminPatients />} />
+              <Route path="/admin/appointments" element={<AdminAppointments />} />
+              <Route path="/admin/pharmacy" element={<AdminPharmacy />} />
               <Route path="/admin/settings" element={<AdminDashboard />} />
               
               {/* Catch-all */}
