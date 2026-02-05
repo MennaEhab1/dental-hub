@@ -9,6 +9,8 @@ import {
   Settings, 
   LogOut,
   Menu,
+  Pill,
+  FileText,
   X,
   Bell,
   ChevronRight,
@@ -27,25 +29,25 @@ interface DashboardLayoutProps {
 const patientNav = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/patient/dashboard' },
   { icon: Calendar, label: 'Appointments', href: '/patient/appointments' },
-  { icon: User, label: 'My Profile', href: '/patient/profile' },
+  { icon: FileText, label: 'Medical Records', href: '/patient/records' },
   { icon: MessageSquare, label: 'Messages', href: '/patient/messages' },
-  { icon: Settings, label: 'Settings', href: '/patient/settings' },
+  { icon: User, label: 'Profile & Settings', href: '/patient/profile' },
 ];
 
 const doctorNav = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/doctor/dashboard' },
   { icon: Calendar, label: 'Appointments', href: '/doctor/appointments' },
   { icon: Users, label: 'My Patients', href: '/doctor/patients' },
+  { icon: FileText, label: 'Medical Records', href: '/doctor/records' },
   { icon: MessageSquare, label: 'Messages', href: '/doctor/messages' },
-  { icon: Settings, label: 'Settings', href: '/doctor/settings' },
 ];
 
 const adminNav = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' },
-  { icon: Users, label: 'Patients', href: '/admin/patients' },
   { icon: Users, label: 'Doctors', href: '/admin/doctors' },
+  { icon: Users, label: 'Patients', href: '/admin/patients' },
   { icon: Calendar, label: 'Appointments', href: '/admin/appointments' },
-  { icon: Settings, label: 'Settings', href: '/admin/settings' },
+  { icon: Pill, label: 'Pharmacy', href: '/admin/pharmacy' },
 ];
 
 export function DashboardLayout({ children, role }: DashboardLayoutProps) {
