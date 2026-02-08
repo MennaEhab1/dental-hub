@@ -14,7 +14,8 @@ import {
   X,
   Bell,
   ChevronRight,
-  User
+  User,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/common/ThemeToggle';
@@ -30,6 +31,7 @@ const patientNav = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/patient/dashboard' },
   { icon: Calendar, label: 'Appointments', href: '/patient/appointments' },
   { icon: FileText, label: 'Medical Records', href: '/patient/records' },
+  { icon: Sparkles, label: 'AI Analysis', href: '/patient/ai-analysis' },
   { icon: MessageSquare, label: 'Messages', href: '/patient/messages' },
   { icon: User, label: 'Profile & Settings', href: '/patient/profile' },
 ];

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AIChatWidget } from "@/components/ai/AIChatWidget";
 
 // Pages
 import LandingPage from "./pages/LandingPage";
@@ -22,6 +23,7 @@ import PatientAppointments from "./pages/patient/PatientAppointments";
 import PatientMedicalRecords from "./pages/patient/PatientMedicalRecords";
 import PatientMessages from "./pages/patient/PatientMessages";
 import PatientProfile from "./pages/patient/PatientProfile";
+import PatientImageAnalysis from "./pages/patient/PatientImageAnalysis";
 
 // Doctor Pages
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
@@ -64,6 +66,7 @@ const App = () => (
               <Route path="/patient/messages" element={<PatientMessages />} />
               <Route path="/patient/profile" element={<PatientProfile />} />
               <Route path="/patient/settings" element={<PatientProfile />} />
+              <Route path="/patient/ai-analysis" element={<PatientImageAnalysis />} />
               
               {/* Doctor Routes */}
               <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
@@ -84,6 +87,7 @@ const App = () => (
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <AIChatWidget />
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
