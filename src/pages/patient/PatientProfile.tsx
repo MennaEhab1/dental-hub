@@ -31,7 +31,7 @@ import { mockPatients } from '@/services/mockData';
 
 export default function PatientProfile() {
   const { user } = useAuth();
-  const patient = mockPatients.find(p => p.id === (user?.id || 'pat-1')) || mockPatients[0];
+  const patient = mockPatients.find(p => p.id === 'pat-1') || mockPatients[0];
 
   const [formData, setFormData] = useState({
     firstName: patient.firstName,

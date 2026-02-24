@@ -14,7 +14,7 @@ export default function PatientMessages() {
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
 
-  const currentUserId = user?.id || 'pat-1';
+  const currentUserId = 'pat-1';
 
   useEffect(() => {
     const fetchConversations = async () => {

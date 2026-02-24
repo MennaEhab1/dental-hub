@@ -129,12 +129,11 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
           <div className="p-4 border-b border-border">
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10">
-                <AvatarImage src={user?.avatar} />
-                <AvatarFallback>{user?.firstName?.[0]}{user?.lastName?.[0]}</AvatarFallback>
+                <AvatarFallback>{user?.userName?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-foreground truncate">
-                  {user?.firstName} {user?.lastName}
+                  {user?.userName || 'User'}
                 </p>
                 <p className="text-xs text-muted-foreground">{roleLabel} Portal</p>
               </div>
@@ -196,8 +195,7 @@ export function DashboardLayout({ children, role }: DashboardLayoutProps) {
               <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
             </Button>
             <Avatar className="h-9 w-9">
-              <AvatarImage src={user?.avatar} />
-              <AvatarFallback>{user?.firstName?.[0]}{user?.lastName?.[0]}</AvatarFallback>
+              <AvatarFallback>{user?.userName?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
             </Avatar>
           </div>
         </header>

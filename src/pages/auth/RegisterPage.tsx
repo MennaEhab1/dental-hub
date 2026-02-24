@@ -11,12 +11,13 @@ import { toast } from 'sonner';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    userName: '',
     email: '',
-    phone: '',
+    phoneNumber: '',
     password: '',
     confirmPassword: '',
+    gender: '',
+    address: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +26,7 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {
@@ -36,14 +37,13 @@ export default function RegisterPage() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
     
-    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
-    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
+    if (!formData.userName.trim()) newErrors.userName = 'Full name is required';
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
-    if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
+    if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'Phone number is required';
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
@@ -65,17 +65,18 @@ export default function RegisterPage() {
     setIsLoading(true);
     try {
       await register({
+        userName: formData.userName,
         email: formData.email,
         password: formData.password,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phone: formData.phone,
-        role: 'patient',
+        phoneNumber: formData.phoneNumber,
+        gender: formData.gender || undefined,
+        address: formData.address || undefined,
       });
       toast.success('Account created successfully!');
       navigate('/patient/dashboard');
-    } catch (error) {
-      toast.error('Registration failed. Please try again.');
+    } catch (error: any) {
+      const msg = error?.message || 'Registration failed. Please try again.';
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
@@ -125,35 +126,19 @@ export default function RegisterPage() {
 
           <div className="bg-card border border-border rounded-2xl p-8 shadow-card">
             <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    placeholder="John"
-                    className={`mt-2 ${errors.firstName ? 'border-destructive' : ''}`}
-                  />
-                  {errors.firstName && (
-                    <p className="text-xs text-destructive mt-1">{errors.firstName}</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    placeholder="Doe"
-                    className={`mt-2 ${errors.lastName ? 'border-destructive' : ''}`}
-                  />
-                  {errors.lastName && (
-                    <p className="text-xs text-destructive mt-1">{errors.lastName}</p>
-                  )}
-                </div>
+              <div>
+                <Label htmlFor="userName">Full Name</Label>
+                <Input
+                  id="userName"
+                  name="userName"
+                  value={formData.userName}
+                  onChange={handleChange}
+                  placeholder="John Doe"
+                  className={`mt-2 ${errors.userName ? 'border-destructive' : ''}`}
+                />
+                {errors.userName && (
+                  <p className="text-xs text-destructive mt-1">{errors.userName}</p>
+                )}
               </div>
 
               <div>
@@ -173,19 +158,34 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phoneNumber">Phone Number</Label>
                 <Input
-                  id="phone"
-                  name="phone"
+                  id="phoneNumber"
+                  name="phoneNumber"
                   type="tel"
-                  value={formData.phone}
+                  value={formData.phoneNumber}
                   onChange={handleChange}
-                  placeholder="+1 555-123-4567"
-                  className={`mt-2 ${errors.phone ? 'border-destructive' : ''}`}
+                  placeholder="+20 1XX XXX XXXX"
+                  className={`mt-2 ${errors.phoneNumber ? 'border-destructive' : ''}`}
                 />
-                {errors.phone && (
-                  <p className="text-xs text-destructive mt-1">{errors.phone}</p>
+                {errors.phoneNumber && (
+                  <p className="text-xs text-destructive mt-1">{errors.phoneNumber}</p>
                 )}
+              </div>
+
+              <div>
+                <Label htmlFor="gender">Gender (Optional)</Label>
+                <select
+                  id="gender"
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  className="mt-2 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+                >
+                  <option value="">Select gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
               </div>
 
               <div>
