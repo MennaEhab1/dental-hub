@@ -45,18 +45,20 @@ export default function LoginPage() {
     
     setIsLoading(true);
     try {
-      await login({ email, password });
+      const response = await login({ email, password });
       toast.success('Welcome back!');
-      // Navigate based on user role (mock implementation)
-      if (email.includes('doctor') || email.includes('doc')) {
+      
+      // Navigate based on role returned from the API
+      const role = response.role?.toLowerCase();
+      if (role === 'doctor') {
         navigate('/doctor/dashboard');
-      } else if (email.includes('admin')) {
+      } else if (role === 'admin') {
         navigate('/admin/dashboard');
       } else {
         navigate('/patient/dashboard');
       }
-    } catch (error) {
-      toast.error('Invalid credentials. Try using any mock email.');
+    } catch (error: any) {
+      toast.error(error?.message || 'Invalid credentials. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -161,25 +163,6 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
-
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="bg-card px-2 text-muted-foreground">
-                    Demo accounts
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-4 space-y-2 text-sm text-muted-foreground">
-                <p><strong>Patient:</strong> john.doe@email.com</p>
-                <p><strong>Doctor:</strong> sarah.johnson@dentalcare.com</p>
-                <p className="text-xs">Use any password (6+ chars)</p>
-              </div>
-            </div>
 
             <p className="mt-6 text-center text-sm text-muted-foreground">
               Don't have an account?{' '}

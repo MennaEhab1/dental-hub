@@ -35,7 +35,7 @@ export default function PatientMedicalRecords() {
   useEffect(() => {
     // TODO: Replace with real API call
     const timer = setTimeout(() => {
-      const patientRecords = mockMedicalRecords.filter(r => r.patientId === (user?.id || 'pat-1'));
+      const patientRecords = mockMedicalRecords.filter(r => r.patientId === 'pat-1');
       setRecords(patientRecords);
       setIsLoading(false);
     }, 600);

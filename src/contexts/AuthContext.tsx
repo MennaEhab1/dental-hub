@@ -1,58 +1,68 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import type { User, AuthCredentials, RegisterData } from '@/types';
-import { authService } from '@/services/api';
+import { authApi } from '@/services/authApi';
+import type { LoginDTO, RegisterDTO, LoginResponseDTO } from '@/types/api';
+
+export interface AuthUser {
+  userName: string | null;
+  email: string | null;
+  role: string | null;
+}
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (credentials: AuthCredentials) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
+  login: (credentials: LoginDTO) => Promise<LoginResponseDTO>;
+  register: (data: RegisterDTO) => Promise<LoginResponseDTO>;
   logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session on mount
-    const checkAuth = async () => {
-      try {
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-          setUser(JSON.parse(userStr));
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-      } finally {
-        setIsLoading(false);
+    // Restore session from localStorage
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        setUser(JSON.parse(userStr));
       }
+    } catch {
+      // ignore
+    } finally {
+      setIsLoading(false);
+    }
+
+    // Listen for token expiry events from apiClient
+    const handleExpired = () => {
+      setUser(null);
     };
-    checkAuth();
+    window.addEventListener('auth:expired', handleExpired);
+    return () => window.removeEventListener('auth:expired', handleExpired);
   }, []);
 
-  const login = async (credentials: AuthCredentials) => {
+  const login = async (credentials: LoginDTO): Promise<LoginResponseDTO> => {
     setIsLoading(true);
     try {
-      const response = await authService.login(credentials);
-      setUser(response.data.user);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      localStorage.setItem('auth_token', response.data.token);
+      const response = await authApi.login(credentials);
+      const sessionUser = authApi.persistSession(response);
+      setUser(sessionUser);
+      return response;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const register = async (data: RegisterData) => {
+  const register = async (data: RegisterDTO): Promise<LoginResponseDTO> => {
     setIsLoading(true);
     try {
-      const response = await authService.register(data);
-      setUser(response.data.user);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      localStorage.setItem('auth_token', response.data.token);
+      const response = await authApi.register(data);
+      const sessionUser = authApi.persistSession(response);
+      setUser(sessionUser);
+      return response;
     } finally {
       setIsLoading(false);
     }
@@ -61,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     setIsLoading(true);
     try {
-      await authService.logout();
+      await authApi.logout();
       setUser(null);
     } finally {
       setIsLoading(false);

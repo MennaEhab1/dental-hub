@@ -30,7 +30,7 @@ export default function PatientDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await appointmentService.getByPatient(user?.id || 'pat-1');
+        const response = await appointmentService.getByPatient('pat-1');
         setAppointments(response.data);
       } catch (error) {
         console.error('Failed to fetch appointments:', error);
@@ -66,7 +66,7 @@ export default function PatientDashboard() {
           className="gradient-hero-bg rounded-2xl p-6 md:p-8"
         >
           <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-2">
-            Welcome back, {user?.firstName || 'Patient'}! 👋
+            Welcome back, {user?.userName || 'Patient'}! 👋
           </h1>
           <p className="text-muted-foreground mb-6">
             Here's an overview of your dental health journey.

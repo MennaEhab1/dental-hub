@@ -27,7 +27,7 @@ export default function DoctorAppointments() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await appointmentService.getByDoctor(user?.id || 'doc-1');
+        const response = await appointmentService.getByDoctor('doc-1');
         setAppointments(response.data);
       } catch (error) {
         console.error('Failed to fetch appointments:', error);

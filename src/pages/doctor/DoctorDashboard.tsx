@@ -32,7 +32,7 @@ export default function DoctorDashboard() {
     const fetchData = async () => {
       try {
         const [appointmentsRes, statsRes] = await Promise.all([
-          appointmentService.getByDoctor(user?.id || 'doc-1'),
+          appointmentService.getByDoctor('doc-1'),
           dashboardService.getStats(),
         ]);
         setAppointments(appointmentsRes.data);
@@ -55,7 +55,7 @@ export default function DoctorDashboard() {
 
   const todayAppointments = appointments.filter(a => a.status !== 'cancelled' && a.status !== 'completed');
   const recentPatients = mockPatients.slice(0, 5);
-  const doctorNotifications = mockNotifications.filter(n => n.userId === (user?.id || 'doc-1'));
+  const doctorNotifications = mockNotifications.filter(n => n.userId === 'doc-1');
 
   return (
     <DashboardLayout role="doctor">
@@ -69,7 +69,7 @@ export default function DoctorDashboard() {
           <div className="flex items-start justify-between">
             <div>
               <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-2">
-                Good morning, Dr. {user?.lastName || 'Doctor'}! 👋
+                Good morning, Dr. {user?.userName || 'Doctor'}! 👋
               </h1>
               <p className="text-muted-foreground">
                 You have {todayAppointments.length} appointments scheduled for today.
